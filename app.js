@@ -77,15 +77,29 @@ async function loadQuestionsAndModels() {
 
 // Initialize Settings Screen
 function initializeSettings() {
-    // Populate model select dropdown
-    const modelSelect = document.getElementById('modelSelect');
-    
-    for (let i = 1; i <= 20; i++) {
-        const option = document.createElement('option');
-        option.value = `model_${i}`;
-        option.textContent = `Model ${i}`;
-        modelSelect.appendChild(option);
-    }
+    // Load metadata to get number of models
+    fetch('metadata.json')
+        .then(response => response.json())
+        .then(metadata => {
+            const modelSelect = document.getElementById('modelSelect');
+            for (let i = 1; i <= metadata.total_models; i++) {
+                const option = document.createElement('option');
+                option.value = `model_${i}`;
+                option.textContent = `Model ${i}`;
+                modelSelect.appendChild(option);
+            }
+        })
+        .catch(error => {
+            console.error('Error loading metadata:', error);
+            // Fallback to 8 models
+            const modelSelect = document.getElementById('modelSelect');
+            for (let i = 1; i <= 8; i++) {
+                const option = document.createElement('option');
+                option.value = `model_${i}`;
+                option.textContent = `Model ${i}`;
+                modelSelect.appendChild(option);
+            }
+        });
 
     // Set up event listeners for question count buttons
     document.querySelectorAll('.count-btn').forEach(btn => {

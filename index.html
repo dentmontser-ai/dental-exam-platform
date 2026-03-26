@@ -23,18 +23,6 @@
                         <select id="modelSelect" class="model-select">
                             <option value="">-- Choose a Model --</option>
                         </select>
-                    <script>
-                        // Populate models dynamically
-                        document.addEventListener('DOMContentLoaded', function() {
-                            const select = document.getElementById('modelSelect');
-                            for (let i = 1; i <= 8; i++) {
-                                const option = document.createElement('option');
-                                option.value = 'model_' + i;
-                                option.textContent = 'Model ' + i;
-                                select.appendChild(option);
-                            }
-                        });
-                    </script>
                     </div>
                     <p class="info-text">Each model contains 50 unique questions</p>
                 </div>
