@@ -1,3 +1,43 @@
+
+// Change Model - Allow user to switch models anytime
+function changeModel() {
+    // Reset all variables
+    currentQuestionIndex = 0;
+    userAnswers = {};
+    startTime = null;
+    if (timerInterval) {
+        clearInterval(timerInterval);
+    }
+
+    // Show settings screen
+    document.getElementById('settingsScreen').style.display = 'flex';
+
+    // Hide header and main content
+    document.getElementById('headerSection').style.display = 'none';
+    document.getElementById('mainContent').style.display = 'none';
+
+    // Hide results container
+    document.getElementById('resultsContainer').style.display = 'none';
+
+    // Show exam container
+    document.getElementById('examContainer').style.display = 'block';
+
+    // Reset settings UI
+    document.getElementById('modelSelect').value = '';
+    document.querySelectorAll('.count-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelector('[data-count="50"]').classList.add('active');
+    document.querySelectorAll('.timer-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelector('[data-timer="false"]').classList.add('active');
+    document.getElementById('customCount').value = '';
+    selectedQuestionCount = 50;
+    timerEnabled = false;
+    selectedModel = null;
+}
+
+// Retake Exam
+function retakeExam() {
+    changeModel();
+}
 // Global Variables
 let allQuestions = {};
 let examModels = {};
@@ -458,6 +498,46 @@ function formatTime(seconds) {
     const minutes = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${minutes}:${secs.toString().padStart(2, '0')}`;
+}
+
+// Change Model - Allow user to switch models anytime
+function changeModel() {
+    // Reset all variables
+    currentQuestionIndex = 0;
+    userAnswers = {};
+    startTime = null;
+    if (timerInterval) {
+        clearInterval(timerInterval);
+    }
+
+    // Show settings screen
+    document.getElementById('settingsScreen').style.display = 'flex';
+
+    // Hide header and main content
+    document.getElementById('headerSection').style.display = 'none';
+    document.getElementById('mainContent').style.display = 'none';
+
+    // Hide results container
+    document.getElementById('resultsContainer').style.display = 'none';
+
+    // Show exam container
+    document.getElementById('examContainer').style.display = 'block';
+
+    // Reset settings UI
+    document.getElementById('modelSelect').value = '';
+    document.querySelectorAll('.count-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelector('[data-count="50"]').classList.add('active');
+    document.querySelectorAll('.timer-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelector('[data-timer="false"]').classList.add('active');
+    document.getElementById('customCount').value = '';
+    selectedQuestionCount = 50;
+    timerEnabled = false;
+    selectedModel = null;
+}
+
+// Retake Exam
+function retakeExam() {
+    changeModel();
 }
 
 // Initialize on page load
