@@ -556,6 +556,19 @@ body {
     transform: translateY(0);
 }
 
+/* Change Model Section */
+.change-model-section {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 2px solid var(--border-color);
+}
+
+.change-model-section .btn-warning {
+    min-width: 200px;
+}
+
 .btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;

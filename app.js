@@ -1,6 +1,17 @@
 
 // Change Model - Allow user to switch models anytime
 function changeModel() {
+    // Ask user if they want to continue or start new
+    const choice = confirm('Do you want to:\n\n✓ OK = Continue with a new model\n✗ Cancel = Resume current exam');
+    
+    if (!choice) {
+        // Resume current exam
+        return;
+    }
+    
+    // Clear session and start new
+    sessionStorage.removeItem('examSession');
+    
     // Reset all variables
     currentQuestionIndex = 0;
     userAnswers = {};
@@ -177,30 +188,47 @@ function toggleTimer() {
 
 // Initialize Exam
 function initializeExam() {
-    // Get questions from selected model
-    let modelQuestions = examModels[selectedModel] || [];
-
-    // If model has fewer questions than requested, use all
-    if (modelQuestions.length < examSettings.questionCount) {
-        currentQuiz = modelQuestions;
+    // Check if there's a saved session
+    const savedSession = sessionStorage.getItem('examSession');
+    
+    if (savedSession) {
+        const session = JSON.parse(savedSession);
+        currentQuiz = session.currentQuiz;
+        currentQuestionIndex = session.currentQuestionIndex;
+        userAnswers = session.userAnswers;
+        selectedModel = session.selectedModel;
+        examSettings = session.examSettings;
+        timerEnabled = session.timerEnabled;
+        
+        if (timerEnabled && session.startTime) {
+            startTime = session.startTime;
+            startTimer();
+        }
+        
+        console.log('Resumed exam from saved session');
     } else {
-        // Take the first N questions from the model
-        currentQuiz = modelQuestions.slice(0, examSettings.questionCount);
-    }
+        // Get questions from selected model
+        let modelQuestions = examModels[selectedModel] || [];
 
-    // Initialize user answers object
-    userAnswers = {};
-    currentQuestionIndex = 0;
+        // If model has fewer questions than requested, use all
+        if (modelQuestions.length < examSettings.questionCount) {
+            currentQuiz = modelQuestions;
+        } else {
+            // Take the first N questions from the model
+            currentQuiz = modelQuestions.slice(0, examSettings.questionCount);
+        }
+
+        // Initialize user answers object
+        userAnswers = {};
+        currentQuestionIndex = 0;
+    }
 
     // Update UI
     document.getElementById('totalQuestions').textContent = currentQuiz.length;
     document.getElementById('totalQuestionsResult').textContent = currentQuiz.length;
 
-    // Start timer if enabled
-    if (timerEnabled) {
-        startTime = Date.now();
-        startTimer();
-    }
+    // Show Change Model button
+    document.getElementById('changeModelBtn').style.display = 'block';
 
     // Display first question
     displayQuestion();
@@ -516,6 +544,17 @@ function formatTime(seconds) {
 
 // Change Model - Allow user to switch models anytime
 function changeModel() {
+    // Ask user if they want to continue or start new
+    const choice = confirm('Do you want to:\n\n✓ OK = Continue with a new model\n✗ Cancel = Resume current exam');
+    
+    if (!choice) {
+        // Resume current exam
+        return;
+    }
+    
+    // Clear session and start new
+    sessionStorage.removeItem('examSession');
+    
     // Reset all variables
     currentQuestionIndex = 0;
     userAnswers = {};
@@ -553,6 +592,28 @@ function changeModel() {
 function retakeExam() {
     changeModel();
 }
+
+
+// Save exam session to sessionStorage
+function saveExamSession() {
+    const session = {
+        currentQuiz: currentQuiz,
+        currentQuestionIndex: currentQuestionIndex,
+        userAnswers: userAnswers,
+        selectedModel: selectedModel,
+        examSettings: examSettings,
+        timerEnabled: timerEnabled,
+        startTime: startTime
+    };
+    sessionStorage.setItem('examSession', JSON.stringify(session));
+}
+
+// Update displayQuestion to save session
+const originalDisplayQuestion = displayQuestion;
+displayQuestion = function() {
+    originalDisplayQuestion();
+    saveExamSession();
+};
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', loadQuestionsAndModels);
