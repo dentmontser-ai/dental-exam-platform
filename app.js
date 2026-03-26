@@ -1,54 +1,3 @@
-
-// Change Model - Allow user to switch models anytime
-function changeModel() {
-    // Ask user if they want to continue or start new
-    const choice = confirm('Do you want to:\n\n✓ OK = Continue with a new model\n✗ Cancel = Resume current exam');
-    
-    if (!choice) {
-        // Resume current exam
-        return;
-    }
-    
-    // Clear session and start new
-    sessionStorage.removeItem('examSession');
-    
-    // Reset all variables
-    currentQuestionIndex = 0;
-    userAnswers = {};
-    startTime = null;
-    if (timerInterval) {
-        clearInterval(timerInterval);
-    }
-
-    // Show settings screen
-    document.getElementById('settingsScreen').style.display = 'flex';
-
-    // Hide header and main content
-    document.getElementById('headerSection').style.display = 'none';
-    document.getElementById('mainContent').style.display = 'none';
-
-    // Hide results container
-    document.getElementById('resultsContainer').style.display = 'none';
-
-    // Show exam container
-    document.getElementById('examContainer').style.display = 'block';
-
-    // Reset settings UI
-    document.getElementById('modelSelect').value = '';
-    document.querySelectorAll('.count-btn').forEach(btn => btn.classList.remove('active'));
-    document.querySelector('[data-count="50"]').classList.add('active');
-    document.querySelectorAll('.timer-btn').forEach(btn => btn.classList.remove('active'));
-    document.querySelector('[data-timer="false"]').classList.add('active');
-    document.getElementById('customCount').value = '';
-    selectedQuestionCount = 50;
-    timerEnabled = false;
-    selectedModel = null;
-}
-
-// Retake Exam
-function retakeExam() {
-    changeModel();
-}
 // Global Variables
 let allQuestions = {};
 let examModels = {};
@@ -71,11 +20,9 @@ let examSettings = {
 // Load questions and models from JSON
 async function loadQuestionsAndModels() {
     try {
-        // Load exam models
         const modelsResponse = await fetch('exam_models.json');
         examModels = await modelsResponse.json();
         
-        // Load original questions for fallback
         const questionsResponse = await fetch('questions_data.json');
         allQuestions = await questionsResponse.json();
         
@@ -88,7 +35,6 @@ async function loadQuestionsAndModels() {
 
 // Initialize Settings Screen
 function initializeSettings() {
-    // Load metadata to get number of models
     fetch('metadata.json')
         .then(response => response.json())
         .then(metadata => {
@@ -102,7 +48,6 @@ function initializeSettings() {
         })
         .catch(error => {
             console.error('Error loading metadata:', error);
-            // Fallback to 8 models
             const modelSelect = document.getElementById('modelSelect');
             for (let i = 1; i <= 8; i++) {
                 const option = document.createElement('option');
@@ -112,7 +57,6 @@ function initializeSettings() {
             }
         });
 
-    // Set up event listeners for question count buttons
     document.querySelectorAll('.count-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             document.querySelectorAll('.count-btn').forEach(b => b.classList.remove('active'));
@@ -122,7 +66,6 @@ function initializeSettings() {
         });
     });
 
-    // Set up event listener for custom count input
     document.getElementById('customCount').addEventListener('input', function() {
         if (this.value) {
             document.querySelectorAll('.count-btn').forEach(b => b.classList.remove('active'));
@@ -130,7 +73,6 @@ function initializeSettings() {
         }
     });
 
-    // Set up event listeners for timer toggle
     document.querySelectorAll('.timer-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             document.querySelectorAll('.timer-btn').forEach(b => b.classList.remove('active'));
@@ -150,45 +92,21 @@ function startExam() {
         return;
     }
 
-    examSettings.model = selectedModel;
-    examSettings.questionCount = selectedQuestionCount;
-    examSettings.timerEnabled = timerEnabled;
+    examSettings = {
+        model: selectedModel,
+        questionCount: selectedQuestionCount,
+        timerEnabled: timerEnabled
+    };
 
-    // Hide settings screen
     document.getElementById('settingsScreen').style.display = 'none';
-
-    // Show header and main content
     document.getElementById('headerSection').style.display = 'block';
     document.getElementById('mainContent').style.display = 'block';
 
-    // Show/hide timer based on settings
-    if (timerEnabled) {
-        document.getElementById('timer').style.display = 'block';
-        document.getElementById('toggleTimerBtn').style.display = 'none';
-    } else {
-        document.getElementById('timer').style.display = 'none';
-        document.getElementById('toggleTimerBtn').style.display = 'block';
-    }
-
-    // Initialize the exam
     initializeExam();
-}
-
-// Toggle Timer
-function toggleTimer() {
-    timerEnabled = true;
-    document.getElementById('timer').style.display = 'block';
-    document.getElementById('toggleTimerBtn').style.display = 'none';
-    
-    if (!startTime) {
-        startTime = Date.now();
-        startTimer();
-    }
 }
 
 // Initialize Exam
 function initializeExam() {
-    // Check if there's a saved session
     const savedSession = sessionStorage.getItem('examSession');
     
     if (savedSession) {
@@ -204,107 +122,78 @@ function initializeExam() {
             startTime = session.startTime;
             startTimer();
         }
-        
-        console.log('Resumed exam from saved session');
     } else {
-        // Get questions from selected model
         let modelQuestions = examModels[selectedModel] || [];
 
-        // If model has fewer questions than requested, use all
         if (modelQuestions.length < examSettings.questionCount) {
             currentQuiz = modelQuestions;
         } else {
-            // Take the first N questions from the model
             currentQuiz = modelQuestions.slice(0, examSettings.questionCount);
         }
 
-        // Initialize user answers object
         userAnswers = {};
         currentQuestionIndex = 0;
     }
 
-    // Update UI
     document.getElementById('totalQuestions').textContent = currentQuiz.length;
     document.getElementById('totalQuestionsResult').textContent = currentQuiz.length;
-
-    // Show Change Model button
     document.getElementById('changeModelBtn').style.display = 'block';
 
-    // Display first question
     displayQuestion();
 }
 
-// Display Current Question
+// Display Question
 function displayQuestion() {
+    if (currentQuestionIndex >= currentQuiz.length) {
+        submitExam();
+        return;
+    }
+
     const question = currentQuiz[currentQuestionIndex];
-    
-    // Update question number and text
     document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
-    document.getElementById('questionNum').textContent = currentQuestionIndex + 1;
     document.getElementById('questionText').textContent = question.question;
 
-    // Update progress bar
-    const progress = ((currentQuestionIndex + 1) / currentQuiz.length) * 100;
-    document.getElementById('progressBar').style.width = progress + '%';
-
-    // Display options
     const optionsContainer = document.getElementById('optionsContainer');
     optionsContainer.innerHTML = '';
 
-    const optionLetters = ['A', 'B', 'C', 'D'];
-    optionLetters.forEach(letter => {
-        if (question.options[letter]) {
-            const optionDiv = document.createElement('div');
-            optionDiv.className = 'option';
-            
-            const input = document.createElement('input');
-            input.type = 'radio';
-            input.name = 'answer';
-            input.value = letter;
-            input.id = 'option_' + letter;
-            
-            // Check if this option was previously selected
-            if (userAnswers[currentQuestionIndex] === letter) {
-                input.checked = true;
-                optionDiv.classList.add('selected');
-            }
+    const options = ['A', 'B', 'C', 'D'];
+    options.forEach(option => {
+        const optionDiv = document.createElement('div');
+        optionDiv.className = 'option';
+        
+        const input = document.createElement('input');
+        input.type = 'radio';
+        input.name = 'option';
+        input.value = option;
+        input.id = `option_${option}`;
+        input.checked = userAnswers[currentQuestionIndex] === option;
+        input.addEventListener('change', () => {
+            userAnswers[currentQuestionIndex] = option;
+            saveExamSession();
+        });
 
-            input.addEventListener('change', () => {
-                userAnswers[currentQuestionIndex] = letter;
-                // Update visual feedback
-                document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
-                optionDiv.classList.add('selected');
-            });
+        const label = document.createElement('label');
+        label.htmlFor = `option_${option}`;
+        label.textContent = `${option}) ${question.options[option]}`;
 
-            const label = document.createElement('label');
-            label.htmlFor = 'option_' + letter;
-            label.className = 'option-text';
-            label.textContent = `${letter}. ${question.options[letter]}`;
-
-            optionDiv.appendChild(input);
-            optionDiv.appendChild(label);
-            optionsContainer.appendChild(optionDiv);
-        }
+        optionDiv.appendChild(input);
+        optionDiv.appendChild(label);
+        optionsContainer.appendChild(optionDiv);
     });
 
-    // Update button states
-    updateButtonStates();
-}
+    const progress = ((currentQuestionIndex + 1) / currentQuiz.length) * 100;
+    document.getElementById('progressBar').style.width = progress + '%';
 
-// Update Button States
-function updateButtonStates() {
-    const prevBtn = document.getElementById('prevBtn');
-    const nextBtn = document.getElementById('nextBtn');
-
-    prevBtn.disabled = currentQuestionIndex === 0;
+    document.getElementById('prevBtn').disabled = currentQuestionIndex === 0;
+    document.getElementById('nextBtn').textContent = currentQuestionIndex === currentQuiz.length - 1 ? 'Submit' : 'Next →';
     
     if (currentQuestionIndex === currentQuiz.length - 1) {
-        nextBtn.textContent = 'Submit →';
-        nextBtn.onclick = submitExam;
+        document.getElementById('nextBtn').onclick = submitExam;
     } else {
-        nextBtn.textContent = 'Next →';
-        nextBtn.onclick = nextQuestion;
+        document.getElementById('nextBtn').onclick = nextQuestion;
     }
+
+    saveExamSession();
 }
 
 // Next Question
@@ -312,7 +201,8 @@ function nextQuestion() {
     if (currentQuestionIndex < currentQuiz.length - 1) {
         currentQuestionIndex++;
         displayQuestion();
-        window.scrollTo(0, 0);
+    } else {
+        submitExam();
     }
 }
 
@@ -321,241 +211,95 @@ function previousQuestion() {
     if (currentQuestionIndex > 0) {
         currentQuestionIndex--;
         displayQuestion();
-        window.scrollTo(0, 0);
     }
 }
 
 // Submit Exam
 function submitExam() {
-    if (timerInterval) {
-        clearInterval(timerInterval);
-    }
-    calculateResults();
-    displayResults();
-    window.scrollTo(0, 0);
-}
-
-// Calculate Results
-function calculateResults() {
     let correctCount = 0;
-    let wrongAnswers = [];
+    const wrongAnswers = [];
 
     currentQuiz.forEach((question, index) => {
         const userAnswer = userAnswers[index];
-        const correctAnswer = question.correct_answer;
-
-        if (userAnswer === correctAnswer) {
+        if (userAnswer === question.correct_answer) {
             correctCount++;
         } else {
             wrongAnswers.push({
-                questionIndex: index,
+                questionNum: index + 1,
                 question: question.question,
-                userAnswer: userAnswer ? question.options[userAnswer] : 'Not answered',
-                correctAnswer: question.options[correctAnswer],
-                userAnswerLetter: userAnswer || 'N/A',
-                correctAnswerLetter: correctAnswer,
-                section: question.section
+                userAnswer: userAnswer ? `${userAnswer}) ${question.options[userAnswer]}` : 'Not answered',
+                correctAnswer: `${question.correct_answer}) ${question.options[question.correct_answer]}`
             });
         }
     });
 
-    const totalQuestions = currentQuiz.length;
-    const wrongCount = totalQuestions - correctCount;
-    const score = Math.round((correctCount / totalQuestions) * 100);
+    const wrongCount = currentQuiz.length - correctCount;
+    const score = Math.round((correctCount / currentQuiz.length) * 100);
 
-    // Calculate duration
-    let duration = 'N/A';
-    if (startTime) {
-        duration = formatTime(Math.floor((Date.now() - startTime) / 1000));
-    }
+    document.getElementById('correctAnswersResult').textContent = correctCount;
+    document.getElementById('wrongAnswersResult').textContent = wrongCount;
+    document.getElementById('scoreResult').textContent = score + '%';
 
-    // Store results
-    window.examResults = {
-        model: selectedModel,
-        totalQuestions,
-        correctCount,
-        wrongCount,
-        score,
-        wrongAnswers,
-        duration
-    };
-}
-
-// Display Results
-function displayResults() {
-    const results = window.examResults;
-
-    // Hide exam container
-    document.getElementById('examContainer').style.display = 'none';
-
-    // Show results container
-    const resultsContainer = document.getElementById('resultsContainer');
-    resultsContainer.style.display = 'block';
-
-    // Update result cards
-    document.getElementById('correctAnswersResult').textContent = results.correctCount;
-    document.getElementById('wrongAnswersResult').textContent = results.wrongCount;
-    document.getElementById('scoreResult').textContent = results.score + '%';
-
-    // Display wrong answers review
-    displayWrongAnswersReview(results.wrongAnswers);
-}
-
-// Display Wrong Answers Review
-function displayWrongAnswersReview(wrongAnswers) {
-    const reviewContainer = document.getElementById('wrongAnswersReview');
-    reviewContainer.innerHTML = '';
+    const reviewDiv = document.getElementById('wrongAnswersReview');
+    reviewDiv.innerHTML = '';
 
     if (wrongAnswers.length === 0) {
-        const noMistakesDiv = document.createElement('div');
-        noMistakesDiv.className = 'wrong-answer-item no-mistakes';
-        noMistakesDiv.innerHTML = '🎉 Perfect! You answered all questions correctly!';
-        reviewContainer.appendChild(noMistakesDiv);
-        return;
-    }
-
-    wrongAnswers.forEach((item, index) => {
-        const itemDiv = document.createElement('div');
-        itemDiv.className = 'wrong-answer-item';
-
-        const questionDiv = document.createElement('div');
-        questionDiv.className = 'wrong-answer-question';
-        questionDiv.textContent = `Question ${item.questionIndex + 1}: ${item.question}`;
-
-        const detailsDiv = document.createElement('div');
-        detailsDiv.className = 'wrong-answer-details';
-
-        // Your Answer
-        const yourAnswerDiv = document.createElement('div');
-        yourAnswerDiv.className = 'answer-detail';
-        yourAnswerDiv.innerHTML = `
-            <div class="answer-detail-label">Your Answer</div>
-            <div class="answer-detail-text incorrect">
-                ${item.userAnswerLetter}. ${item.userAnswer}
-            </div>
-        `;
-
-        // Correct Answer
-        const correctAnswerDiv = document.createElement('div');
-        correctAnswerDiv.className = 'answer-detail';
-        correctAnswerDiv.innerHTML = `
-            <div class="answer-detail-label">Correct Answer</div>
-            <div class="answer-detail-text correct">
-                ${item.correctAnswerLetter}. ${item.correctAnswer}
-            </div>
-        `;
-
-        detailsDiv.appendChild(yourAnswerDiv);
-        detailsDiv.appendChild(correctAnswerDiv);
-
-        itemDiv.appendChild(questionDiv);
-        itemDiv.appendChild(detailsDiv);
-        reviewContainer.appendChild(itemDiv);
-    });
-}
-
-// Retake Exam
-function retakeExam() {
-    // Reset all variables
-    currentQuestionIndex = 0;
-    userAnswers = {};
-    startTime = null;
-    if (timerInterval) {
-        clearInterval(timerInterval);
-    }
-
-    // Show settings screen
-    document.getElementById('settingsScreen').style.display = 'flex';
-
-    // Hide header and main content
-    document.getElementById('headerSection').style.display = 'none';
-    document.getElementById('mainContent').style.display = 'none';
-
-    // Hide results container
-    document.getElementById('resultsContainer').style.display = 'none';
-
-    // Show exam container
-    document.getElementById('examContainer').style.display = 'block';
-
-    // Reset settings UI
-    document.getElementById('modelSelect').value = '';
-    document.querySelectorAll('.count-btn').forEach(btn => btn.classList.remove('active'));
-    document.querySelector('[data-count="50"]').classList.add('active');
-    document.querySelectorAll('.timer-btn').forEach(btn => btn.classList.remove('active'));
-    document.querySelector('[data-timer="false"]').classList.add('active');
-    document.getElementById('customCount').value = '';
-    selectedQuestionCount = 50;
-    timerEnabled = false;
-    selectedModel = null;
-}
-
-// Download Results
-function downloadResults() {
-    const results = window.examResults;
-    let csvContent = 'data:text/csv;charset=utf-8,';
-
-    // Header
-    csvContent += 'Comprehensive Test for Bachelor of Dentist - Results\n';
-    csvContent += 'made by dr. Montser AL_jodaei\n\n';
-
-    // Summary
-    csvContent += 'Exam Model,' + results.model + '\n';
-    csvContent += 'Total Questions,' + results.totalQuestions + '\n';
-    csvContent += 'Correct Answers,' + results.correctCount + '\n';
-    csvContent += 'Wrong Answers,' + results.wrongCount + '\n';
-    csvContent += 'Score,' + results.score + '%\n';
-    csvContent += 'Duration,' + results.duration + '\n\n';
-
-    // Wrong Answers
-    if (results.wrongAnswers.length > 0) {
-        csvContent += 'Question Number,Question,Your Answer,Correct Answer,Section\n';
-        results.wrongAnswers.forEach(item => {
-            const questionNum = item.questionIndex + 1;
-            const question = item.question.replace(/,/g, ';');
-            const userAnswer = item.userAnswer.replace(/,/g, ';');
-            const correctAnswer = item.correctAnswer.replace(/,/g, ';');
-            csvContent += `${questionNum},"${question}","${userAnswer}","${correctAnswer}","${item.section}"\n`;
+        reviewDiv.innerHTML = '<p class="no-mistakes">Congratulations! You answered all questions correctly! 🎉</p>';
+    } else {
+        wrongAnswers.forEach(item => {
+            const reviewItem = document.createElement('div');
+            reviewItem.className = 'review-item';
+            reviewItem.innerHTML = `
+                <div class="review-header">
+                    <h4>Question ${item.questionNum}</h4>
+                </div>
+                <p class="review-question"><strong>Q:</strong> ${item.question}</p>
+                <p class="review-answer incorrect"><strong>Your Answer:</strong> ${item.userAnswer}</p>
+                <p class="review-answer correct"><strong>Correct Answer:</strong> ${item.correctAnswer}</p>
+            `;
+            reviewDiv.appendChild(reviewItem);
         });
     }
 
-    // Create download link
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement('a');
-    link.setAttribute('href', encodedUri);
-    link.setAttribute('download', 'dental_exam_results.csv');
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    document.getElementById('examContainer').style.display = 'none';
+    document.getElementById('resultsContainer').style.display = 'block';
+    sessionStorage.removeItem('examSession');
+
+    if (timerInterval) {
+        clearInterval(timerInterval);
+    }
 }
 
 // Timer Functions
 function startTimer() {
     timerInterval = setInterval(() => {
         const elapsed = Math.floor((Date.now() - startTime) / 1000);
-        document.getElementById('timer').textContent = formatTime(elapsed);
+        const minutes = Math.floor(elapsed / 60);
+        const seconds = elapsed % 60;
+        document.getElementById('timer').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
     }, 1000);
 }
 
-function formatTime(seconds) {
-    const minutes = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${minutes}:${secs.toString().padStart(2, '0')}`;
+function toggleTimer() {
+    if (!timerEnabled) {
+        timerEnabled = true;
+        startTime = Date.now();
+        startTimer();
+        document.getElementById('timer').style.display = 'block';
+        document.getElementById('toggleTimerBtn').style.display = 'none';
+    }
 }
 
-// Change Model - Allow user to switch models anytime
+// Change Model
 function changeModel() {
-    // Ask user if they want to continue or start new
     const choice = confirm('Do you want to:\n\n✓ OK = Continue with a new model\n✗ Cancel = Resume current exam');
     
     if (!choice) {
-        // Resume current exam
         return;
     }
     
-    // Clear session and start new
     sessionStorage.removeItem('examSession');
     
-    // Reset all variables
     currentQuestionIndex = 0;
     userAnswers = {};
     startTime = null;
@@ -563,20 +307,12 @@ function changeModel() {
         clearInterval(timerInterval);
     }
 
-    // Show settings screen
     document.getElementById('settingsScreen').style.display = 'flex';
-
-    // Hide header and main content
     document.getElementById('headerSection').style.display = 'none';
     document.getElementById('mainContent').style.display = 'none';
-
-    // Hide results container
     document.getElementById('resultsContainer').style.display = 'none';
-
-    // Show exam container
     document.getElementById('examContainer').style.display = 'block';
 
-    // Reset settings UI
     document.getElementById('modelSelect').value = '';
     document.querySelectorAll('.count-btn').forEach(btn => btn.classList.remove('active'));
     document.querySelector('[data-count="50"]').classList.add('active');
@@ -593,8 +329,7 @@ function retakeExam() {
     changeModel();
 }
 
-
-// Save exam session to sessionStorage
+// Save Exam Session
 function saveExamSession() {
     const session = {
         currentQuiz: currentQuiz,
@@ -608,12 +343,23 @@ function saveExamSession() {
     sessionStorage.setItem('examSession', JSON.stringify(session));
 }
 
-// Update displayQuestion to save session
-const originalDisplayQuestion = displayQuestion;
-displayQuestion = function() {
-    originalDisplayQuestion();
-    saveExamSession();
-};
+// Download Results
+function downloadResults() {
+    let csv = 'Question,Your Answer,Correct Answer,Result\n';
+    
+    currentQuiz.forEach((question, index) => {
+        const userAnswer = userAnswers[index] || 'Not answered';
+        const isCorrect = userAnswer === question.correct_answer;
+        csv += `"${question.question}","${userAnswer}","${question.correct_answer}","${isCorrect ? 'Correct' : 'Wrong'}"\n`;
+    });
+
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'exam_results.csv';
+    a.click();
+}
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', loadQuestionsAndModels);
