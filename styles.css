@@ -324,6 +324,39 @@ body {
     font-size: 14px;
     font-weight: 500;
     letter-spacing: 0.3px;
+    margin-bottom: 12px;
+}
+
+.telegram-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: rgba(255, 255, 255, 0.25);
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-radius: 25px;
+    color: var(--white);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    cursor: pointer;
+}
+
+.telegram-icon {
+    font-size: 18px;
+}
+
+.telegram-btn:hover {
+    background: rgba(255, 255, 255, 0.35);
+    border-color: rgba(255, 255, 255, 0.6);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.telegram-btn:active {
+    transform: translateY(0);
 }
 
 /* Main Content */
