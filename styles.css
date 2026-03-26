@@ -4,6 +4,53 @@
     box-sizing: border-box;
 }
 
+:root {
+    --primary-color: #6366f1;
+    --secondary-color: #8b5cf6;
+    --success-color: #10b981;
+    --danger-color: #ef4444;
+    --warning-color: #f59e0b;
+    --light-bg: #f8fafc;
+    --white: #ffffff;
+    --text-dark: #1e293b;
+    --text-light: #64748b;
+    --border-color: #e2e8f0;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    color: var(--text-dark);
+}
+
+.container {
+    width: 100%;
+    max-width: 900px;
+    background: var(--white);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 /* Settings Screen Styles */
 .settings-screen {
     display: flex;
@@ -51,6 +98,41 @@
     font-weight: 600;
     color: var(--text-dark);
     margin-bottom: 15px;
+}
+
+.model-selection {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+}
+
+.model-select {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    font-size: 14px;
+    background: var(--white);
+    color: var(--text-dark);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+}
+
+.model-select:hover {
+    border-color: var(--primary-color);
+}
+
+.model-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.model-select option {
+    padding: 10px;
+    background: var(--white);
+    color: var(--text-dark);
 }
 
 .question-count-options {
@@ -183,60 +265,12 @@
     gap: 10px;
 }
 
-:root {
-    --primary-color: #6366f1;
-    --secondary-color: #8b5cf6;
-    --success-color: #10b981;
-    --danger-color: #ef4444;
-    --warning-color: #f59e0b;
-    --light-bg: #f8fafc;
-    --white: #ffffff;
-    --text-dark: #1e293b;
-    --text-light: #64748b;
-    --border-color: #e2e8f0;
-    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
-}
-
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    color: var(--text-dark);
-}
-
-.container {
-    width: 100%;
-    max-width: 900px;
-    background: var(--white);
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow: var(--shadow-lg);
-    animation: slideIn 0.5s ease-out;
-}
-
-@keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
 /* Header Styles */
 .header {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: var(--white);
     padding: 30px 20px;
     text-align: center;
-    display: none;
 }
 
 .header-top {
@@ -636,36 +670,6 @@ body {
 
 /* Responsive Design */
 @media (max-width: 768px) {
-    .settings-content {
-        padding: 25px;
-    }
-
-    .settings-header h1 {
-        font-size: 28px;
-    }
-
-    .question-count-options {
-        gap: 8px;
-    }
-
-    .count-btn {
-        padding: 10px 16px;
-        font-size: 12px;
-    }
-
-    .custom-count input {
-        width: 100px;
-    }
-
-    .timer-btn {
-        min-width: 120px;
-        padding: 12px 16px;
-    }
-
-    .btn-large {
-        min-width: 200px;
-    }
-
     .container {
         border-radius: 15px;
     }
@@ -725,6 +729,36 @@ body {
 
     .wrong-answer-details {
         flex-direction: column;
+    }
+
+    .settings-content {
+        padding: 25px;
+    }
+
+    .settings-header h1 {
+        font-size: 28px;
+    }
+
+    .question-count-options {
+        gap: 8px;
+    }
+
+    .count-btn {
+        padding: 10px 16px;
+        font-size: 12px;
+    }
+
+    .custom-count input {
+        width: 100px;
+    }
+
+    .timer-btn {
+        min-width: 120px;
+        padding: 12px 16px;
+    }
+
+    .btn-large {
+        min-width: 200px;
     }
 }
 

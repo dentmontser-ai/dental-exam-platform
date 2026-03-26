@@ -1,5 +1,6 @@
 // Global Variables
 let allQuestions = {};
+let examModels = {};
 let currentQuiz = [];
 let currentQuestionIndex = 0;
 let userAnswers = {};
@@ -7,27 +8,45 @@ let startTime = null;
 let timerInterval = null;
 let timerEnabled = false;
 let selectedQuestionCount = 50;
+let selectedModel = null;
 
 // Settings
 let examSettings = {
+    model: null,
     questionCount: 50,
     timerEnabled: false
 };
 
-// Load questions from JSON
-async function loadQuestions() {
+// Load questions and models from JSON
+async function loadQuestionsAndModels() {
     try {
-        const response = await fetch('questions_data.json');
-        allQuestions = await response.json();
+        // Load exam models
+        const modelsResponse = await fetch('exam_models.json');
+        examModels = await modelsResponse.json();
+        
+        // Load original questions for fallback
+        const questionsResponse = await fetch('questions_data.json');
+        allQuestions = await questionsResponse.json();
+        
         initializeSettings();
     } catch (error) {
-        console.error('Error loading questions:', error);
-        alert('Failed to load questions. Please refresh the page.');
+        console.error('Error loading data:', error);
+        alert('Failed to load exam data. Please refresh the page.');
     }
 }
 
 // Initialize Settings Screen
 function initializeSettings() {
+    // Populate model select dropdown
+    const modelSelect = document.getElementById('modelSelect');
+    
+    for (let i = 1; i <= 20; i++) {
+        const option = document.createElement('option');
+        option.value = `model_${i}`;
+        option.textContent = `Model ${i}`;
+        modelSelect.appendChild(option);
+    }
+
     // Set up event listeners for question count buttons
     document.querySelectorAll('.count-btn').forEach(btn => {
         btn.addEventListener('click', function() {
@@ -58,6 +77,15 @@ function initializeSettings() {
 
 // Start Exam
 function startExam() {
+    const modelSelect = document.getElementById('modelSelect');
+    selectedModel = modelSelect.value;
+
+    if (!selectedModel) {
+        alert('Please select an exam model!');
+        return;
+    }
+
+    examSettings.model = selectedModel;
     examSettings.questionCount = selectedQuestionCount;
     examSettings.timerEnabled = timerEnabled;
 
@@ -95,15 +123,17 @@ function toggleTimer() {
 
 // Initialize Exam
 function initializeExam() {
-    // Flatten all questions from all sections
-    const allQuestionsArray = [];
-    for (const section in allQuestions) {
-        allQuestionsArray.push(...allQuestions[section]);
+    // Get questions from selected model
+    let modelQuestions = examModels[selectedModel] || [];
+
+    // If model has fewer questions than requested, use all
+    if (modelQuestions.length < examSettings.questionCount) {
+        currentQuiz = modelQuestions;
+    } else {
+        // Take the first N questions from the model
+        currentQuiz = modelQuestions.slice(0, examSettings.questionCount);
     }
 
-    // Shuffle and select random questions
-    currentQuiz = shuffleArray(allQuestionsArray).slice(0, examSettings.questionCount);
-    
     // Initialize user answers object
     userAnswers = {};
     currentQuestionIndex = 0;
@@ -120,16 +150,6 @@ function initializeExam() {
 
     // Display first question
     displayQuestion();
-}
-
-// Shuffle Array (Fisher-Yates)
-function shuffleArray(array) {
-    const shuffled = [...array];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-    return shuffled;
 }
 
 // Display Current Question
@@ -269,6 +289,7 @@ function calculateResults() {
 
     // Store results
     window.examResults = {
+        model: selectedModel,
         totalQuestions,
         correctCount,
         wrongCount,
@@ -375,6 +396,7 @@ function retakeExam() {
     document.getElementById('examContainer').style.display = 'block';
 
     // Reset settings UI
+    document.getElementById('modelSelect').value = '';
     document.querySelectorAll('.count-btn').forEach(btn => btn.classList.remove('active'));
     document.querySelector('[data-count="50"]').classList.add('active');
     document.querySelectorAll('.timer-btn').forEach(btn => btn.classList.remove('active'));
@@ -382,6 +404,7 @@ function retakeExam() {
     document.getElementById('customCount').value = '';
     selectedQuestionCount = 50;
     timerEnabled = false;
+    selectedModel = null;
 }
 
 // Download Results
@@ -394,6 +417,7 @@ function downloadResults() {
     csvContent += 'made by dr. Montser AL_jodaei\n\n';
 
     // Summary
+    csvContent += 'Exam Model,' + results.model + '\n';
     csvContent += 'Total Questions,' + results.totalQuestions + '\n';
     csvContent += 'Correct Answers,' + results.correctCount + '\n';
     csvContent += 'Wrong Answers,' + results.wrongCount + '\n';
@@ -437,4 +461,4 @@ function formatTime(seconds) {
 }
 
 // Initialize on page load
-document.addEventListener('DOMContentLoaded', loadQuestions);
+document.addEventListener('DOMContentLoaded', loadQuestionsAndModels);

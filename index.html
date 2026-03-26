@@ -16,6 +16,17 @@
             </div>
 
             <div class="settings-content">
+                <!-- Model Selection -->
+                <div class="settings-group">
+                    <label for="modelSelect">Select Exam Model:</label>
+                    <div class="model-selection">
+                        <select id="modelSelect" class="model-select">
+                            <option value="">-- Choose a Model --</option>
+                        </select>
+                    </div>
+                    <p class="info-text">Each model contains 50 unique questions</p>
+                </div>
+
                 <!-- Number of Questions -->
                 <div class="settings-group">
                     <label for="questionCount">Number of Questions:</label>
@@ -138,7 +149,7 @@
         </div>
     </div>
 
-    <script src="questions_data.json" type="application/json" id="questionsData"></script>
+    <script src="exam_models.json" type="application/json" id="modelsData"></script>
     <script src="app.js"></script>
 </body>
 </html>
