@@ -8,14 +8,65 @@
 </head>
 <body>
     <div class="container">
+        <!-- Settings Screen -->
+        <div id="settingsScreen" class="settings-screen">
+            <div class="settings-header">
+                <h1>Exam Settings</h1>
+                <p>Configure your exam preferences</p>
+            </div>
+
+            <div class="settings-content">
+                <!-- Number of Questions -->
+                <div class="settings-group">
+                    <label for="questionCount">Number of Questions:</label>
+                    <div class="question-count-options">
+                        <button class="count-btn" data-count="25">25</button>
+                        <button class="count-btn active" data-count="50">50</button>
+                        <button class="count-btn" data-count="100">100</button>
+                        <div class="custom-count">
+                            <input type="number" id="customCount" placeholder="Custom" min="1" max="922">
+                        </div>
+                    </div>
+                    <p class="info-text">Total available questions: 922</p>
+                </div>
+
+                <!-- Timer Option -->
+                <div class="settings-group">
+                    <label>Enable Timer:</label>
+                    <div class="timer-toggle">
+                        <button class="timer-btn active" data-timer="false">
+                            <span class="timer-icon">⏱️</span>
+                            <span>Without Timer</span>
+                        </button>
+                        <button class="timer-btn" data-timer="true">
+                            <span class="timer-icon">⏰</span>
+                            <span>With Timer</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Start Button -->
+                <div class="settings-actions">
+                    <button id="startExamBtn" class="btn btn-primary btn-large" onclick="startExam()">
+                        Start Exam
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <!-- Header -->
-        <div class="header">
+        <div id="headerSection" class="header" style="display: none;">
             <div class="header-top">
                 <div class="question-counter">
                     <span id="questionNum">1</span>
                 </div>
                 <h1>Exam</h1>
-                <div class="timer" id="timer">0:00</div>
+                <div class="timer-section">
+                    <div class="timer" id="timer" style="display: none;">0:00</div>
+                    <button id="toggleTimerBtn" class="btn-timer" onclick="toggleTimer()" style="display: none;">
+                        ⏱️ Enable Timer
+                    </button>
+                </div>
             </div>
             <h2>Comprehensive Test for Bachelor of Dentist</h2>
             <div class="prepared-by">
@@ -24,7 +75,7 @@
         </div>
 
         <!-- Main Content -->
-        <div class="main-content">
+        <div id="mainContent" class="main-content" style="display: none;">
             <!-- Progress Bar -->
             <div class="progress-container">
                 <div class="progress-bar" id="progressBar"></div>

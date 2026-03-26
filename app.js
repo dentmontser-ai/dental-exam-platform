@@ -5,16 +5,91 @@ let currentQuestionIndex = 0;
 let userAnswers = {};
 let startTime = null;
 let timerInterval = null;
+let timerEnabled = false;
+let selectedQuestionCount = 50;
+
+// Settings
+let examSettings = {
+    questionCount: 50,
+    timerEnabled: false
+};
 
 // Load questions from JSON
 async function loadQuestions() {
     try {
         const response = await fetch('questions_data.json');
         allQuestions = await response.json();
-        initializeExam();
+        initializeSettings();
     } catch (error) {
         console.error('Error loading questions:', error);
         alert('Failed to load questions. Please refresh the page.');
+    }
+}
+
+// Initialize Settings Screen
+function initializeSettings() {
+    // Set up event listeners for question count buttons
+    document.querySelectorAll('.count-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.count-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            document.getElementById('customCount').value = '';
+            selectedQuestionCount = parseInt(this.dataset.count);
+        });
+    });
+
+    // Set up event listener for custom count input
+    document.getElementById('customCount').addEventListener('input', function() {
+        if (this.value) {
+            document.querySelectorAll('.count-btn').forEach(b => b.classList.remove('active'));
+            selectedQuestionCount = Math.min(parseInt(this.value) || 50, 922);
+        }
+    });
+
+    // Set up event listeners for timer toggle
+    document.querySelectorAll('.timer-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.timer-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            timerEnabled = this.dataset.timer === 'true';
+        });
+    });
+}
+
+// Start Exam
+function startExam() {
+    examSettings.questionCount = selectedQuestionCount;
+    examSettings.timerEnabled = timerEnabled;
+
+    // Hide settings screen
+    document.getElementById('settingsScreen').style.display = 'none';
+
+    // Show header and main content
+    document.getElementById('headerSection').style.display = 'block';
+    document.getElementById('mainContent').style.display = 'block';
+
+    // Show/hide timer based on settings
+    if (timerEnabled) {
+        document.getElementById('timer').style.display = 'block';
+        document.getElementById('toggleTimerBtn').style.display = 'none';
+    } else {
+        document.getElementById('timer').style.display = 'none';
+        document.getElementById('toggleTimerBtn').style.display = 'block';
+    }
+
+    // Initialize the exam
+    initializeExam();
+}
+
+// Toggle Timer
+function toggleTimer() {
+    timerEnabled = true;
+    document.getElementById('timer').style.display = 'block';
+    document.getElementById('toggleTimerBtn').style.display = 'none';
+    
+    if (!startTime) {
+        startTime = Date.now();
+        startTimer();
     }
 }
 
@@ -26,8 +101,8 @@ function initializeExam() {
         allQuestionsArray.push(...allQuestions[section]);
     }
 
-    // Shuffle and select 50 random questions
-    currentQuiz = shuffleArray(allQuestionsArray).slice(0, 50);
+    // Shuffle and select random questions
+    currentQuiz = shuffleArray(allQuestionsArray).slice(0, examSettings.questionCount);
     
     // Initialize user answers object
     userAnswers = {};
@@ -37,9 +112,11 @@ function initializeExam() {
     document.getElementById('totalQuestions').textContent = currentQuiz.length;
     document.getElementById('totalQuestionsResult').textContent = currentQuiz.length;
 
-    // Start timer
-    startTime = Date.now();
-    startTimer();
+    // Start timer if enabled
+    if (timerEnabled) {
+        startTime = Date.now();
+        startTimer();
+    }
 
     // Display first question
     displayQuestion();
@@ -148,7 +225,9 @@ function previousQuestion() {
 
 // Submit Exam
 function submitExam() {
-    clearInterval(timerInterval);
+    if (timerInterval) {
+        clearInterval(timerInterval);
+    }
     calculateResults();
     displayResults();
     window.scrollTo(0, 0);
@@ -182,6 +261,12 @@ function calculateResults() {
     const wrongCount = totalQuestions - correctCount;
     const score = Math.round((correctCount / totalQuestions) * 100);
 
+    // Calculate duration
+    let duration = 'N/A';
+    if (startTime) {
+        duration = formatTime(Math.floor((Date.now() - startTime) / 1000));
+    }
+
     // Store results
     window.examResults = {
         totalQuestions,
@@ -189,7 +274,7 @@ function calculateResults() {
         wrongCount,
         score,
         wrongAnswers,
-        duration: formatTime(Math.floor((Date.now() - startTime) / 1000))
+        duration
     };
 }
 
@@ -271,6 +356,17 @@ function retakeExam() {
     // Reset all variables
     currentQuestionIndex = 0;
     userAnswers = {};
+    startTime = null;
+    if (timerInterval) {
+        clearInterval(timerInterval);
+    }
+
+    // Show settings screen
+    document.getElementById('settingsScreen').style.display = 'flex';
+
+    // Hide header and main content
+    document.getElementById('headerSection').style.display = 'none';
+    document.getElementById('mainContent').style.display = 'none';
 
     // Hide results container
     document.getElementById('resultsContainer').style.display = 'none';
@@ -278,8 +374,14 @@ function retakeExam() {
     // Show exam container
     document.getElementById('examContainer').style.display = 'block';
 
-    // Reinitialize exam
-    initializeExam();
+    // Reset settings UI
+    document.querySelectorAll('.count-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelector('[data-count="50"]').classList.add('active');
+    document.querySelectorAll('.timer-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelector('[data-timer="false"]').classList.add('active');
+    document.getElementById('customCount').value = '';
+    selectedQuestionCount = 50;
+    timerEnabled = false;
 }
 
 // Download Results

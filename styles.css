@@ -4,6 +4,185 @@
     box-sizing: border-box;
 }
 
+/* Settings Screen Styles */
+.settings-screen {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 40px 20px;
+    animation: slideIn 0.5s ease-out;
+}
+
+.settings-header {
+    text-align: center;
+    color: var(--white);
+    margin-bottom: 50px;
+}
+
+.settings-header h1 {
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.settings-header p {
+    font-size: 16px;
+    opacity: 0.9;
+}
+
+.settings-content {
+    background: var(--white);
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: var(--shadow-lg);
+    max-width: 600px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.settings-group {
+    margin-bottom: 40px;
+}
+
+.settings-group label {
+    display: block;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 15px;
+}
+
+.question-count-options {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.count-btn {
+    padding: 12px 24px;
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    background: var(--white);
+    color: var(--text-dark);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+}
+
+.count-btn:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.count-btn.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: var(--white);
+    border-color: var(--primary-color);
+}
+
+.custom-count {
+    display: flex;
+}
+
+.custom-count input {
+    padding: 12px 16px;
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    font-size: 14px;
+    width: 120px;
+    transition: all 0.3s ease;
+}
+
+.custom-count input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.info-text {
+    font-size: 12px;
+    color: var(--text-light);
+    margin-top: 8px;
+}
+
+.timer-toggle {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.timer-btn {
+    flex: 1;
+    min-width: 150px;
+    padding: 16px 20px;
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    background: var(--white);
+    color: var(--text-dark);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.timer-icon {
+    font-size: 24px;
+}
+
+.timer-btn:hover {
+    border-color: var(--primary-color);
+    background: rgba(99, 102, 241, 0.05);
+}
+
+.timer-btn.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: var(--white);
+    border-color: var(--primary-color);
+}
+
+.settings-actions {
+    margin-top: 40px;
+    display: flex;
+    justify-content: center;
+}
+
+.btn-large {
+    min-width: 250px;
+    padding: 16px 40px;
+    font-size: 18px;
+}
+
+.btn-timer {
+    background: none;
+    border: none;
+    color: var(--white);
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.btn-timer:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.timer-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
 :root {
     --primary-color: #6366f1;
     --secondary-color: #8b5cf6;
@@ -57,6 +236,7 @@ body {
     color: var(--white);
     padding: 30px 20px;
     text-align: center;
+    display: none;
 }
 
 .header-top {
@@ -456,6 +636,36 @@ body {
 
 /* Responsive Design */
 @media (max-width: 768px) {
+    .settings-content {
+        padding: 25px;
+    }
+
+    .settings-header h1 {
+        font-size: 28px;
+    }
+
+    .question-count-options {
+        gap: 8px;
+    }
+
+    .count-btn {
+        padding: 10px 16px;
+        font-size: 12px;
+    }
+
+    .custom-count input {
+        width: 100px;
+    }
+
+    .timer-btn {
+        min-width: 120px;
+        padding: 12px 16px;
+    }
+
+    .btn-large {
+        min-width: 200px;
+    }
+
     .container {
         border-radius: 15px;
     }
