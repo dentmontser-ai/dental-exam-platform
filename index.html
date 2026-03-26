@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprehensive Test for Bachelor of Dentist</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-top">
+                <div class="question-counter">
+                    <span id="questionNum">1</span>
+                </div>
+                <h1>Exam</h1>
+                <div class="timer" id="timer">0:00</div>
+            </div>
+            <h2>Comprehensive Test for Bachelor of Dentist</h2>
+            <div class="prepared-by">
+                <p>made by dr. Montser AL_jodaei</p>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Progress Bar -->
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+
+            <!-- Question Section -->
+            <div id="examContainer" class="exam-container">
+                <div class="question-section">
+                    <p class="question-label" id="questionLabel">Question <span id="currentQuestion">1</span> of <span id="totalQuestions">50</span></p>
+                    <h3 id="questionText" class="question-text"></h3>
+
+                    <!-- Options -->
+                    <div class="options-container" id="optionsContainer"></div>
+                </div>
+
+                <!-- Navigation Buttons -->
+                <div class="button-group">
+                    <button id="prevBtn" class="btn btn-secondary" onclick="previousQuestion()">← Previous</button>
+                    <button id="nextBtn" class="btn btn-primary" onclick="nextQuestion()">Next →</button>
+                </div>
+            </div>
+
+            <!-- Results Section (Hidden by default) -->
+            <div id="resultsContainer" class="results-container" style="display: none;">
+                <div class="results-header">
+                    <h2>Exam Results</h2>
+                </div>
+
+                <div class="results-summary">
+                    <div class="result-card">
+                        <h3>Total Questions</h3>
+                        <p class="result-value" id="totalQuestionsResult">50</p>
+                    </div>
+                    <div class="result-card correct">
+                        <h3>Correct Answers</h3>
+                        <p class="result-value" id="correctAnswersResult">0</p>
+                    </div>
+                    <div class="result-card incorrect">
+                        <h3>Wrong Answers</h3>
+                        <p class="result-value" id="wrongAnswersResult">0</p>
+                    </div>
+                    <div class="result-card score">
+                        <h3>Score</h3>
+                        <p class="result-value" id="scoreResult">0%</p>
+                    </div>
+                </div>
+
+                <!-- Wrong Answers Review -->
+                <div class="wrong-answers-section">
+                    <h3>Review Your Mistakes</h3>
+                    <div id="wrongAnswersReview" class="wrong-answers-list"></div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="results-buttons">
+                    <button class="btn btn-primary" onclick="retakeExam()">Retake Exam</button>
+                    <button class="btn btn-secondary" onclick="downloadResults()">Download Results</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="questions_data.json" type="application/json" id="questionsData"></script>
+    <script src="app.js"></script>
+</body>
+</html>
