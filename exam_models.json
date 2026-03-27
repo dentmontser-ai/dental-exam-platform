@@ -1,21 +1,21 @@
 {
   "model_1": [
     {
-      "question": "Pt presented to u with trauma of the central incisor with open apex tooth clinical",
+      "question": "A patient presented with trauma of the central incisor with open apex. Which of the following best describes apexification?",
       "options": {
         "A": "Finds the most apical stop of the Gutta-Percha in RCT.",
-        "B": "Induce the formation of a mineral barrier in the apical region of incompletely root.",
-        "C": "Is new in the endodontic field.",
-        "D": "Involves the surgical removal of the apical region of the root and placement of a retrograde"
+        "B": "Induces the formation of a mineral barrier in the apical region of an incompletely developed root.",
+        "C": "Is a new technique in the endodontic field.",
+        "D": "Involves the surgical removal of the apical region of the root and placement of a retrograde filling."
       },
       "correct_answer": "B"
     },
     {
-      "question": "A Tailor is presented to your dental office , what’s the most common feature to be",
+      "question": "A tailor is presented to your dental office. What is the most common feature to be found in his dentition?",
       "options": {
-        "A": "A hard tooth brush.",
-        "B": "Tooth abrasive tooth paste or powder.",
-        "C": "Vigorous use of the tooth brush.",
+        "A": "Use of a hard toothbrush.",
+        "B": "Tooth abrasion from abrasive toothpaste or powder.",
+        "C": "Vigorous use of the toothbrush.",
         "D": "A and B only."
       },
       "correct_answer": "B"
