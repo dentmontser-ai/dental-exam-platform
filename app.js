@@ -107,7 +107,7 @@ function startExam() {
 
 // Initialize Exam
 function initializeExam() {
-    const savedSession = sessionStorage.getItem('examSession');
+    const savedSession = sessionStorage.getItem('examSession') || localStorage.getItem('examSession');
     
     if (savedSession) {
         const session = JSON.parse(savedSession);
@@ -167,14 +167,33 @@ function displayQuestion() {
         input.value = option;
         input.id = `option_${option}`;
         input.checked = userAnswers[currentQuestionIndex] === option;
+        
+        // Save answer immediately when clicked
         input.addEventListener('change', () => {
             userAnswers[currentQuestionIndex] = option;
+            console.log(`Answer saved for question ${currentQuestionIndex + 1}: ${option}`);
+            saveExamSession();
+        });
+        
+        // Also save on click to ensure it's captured
+        input.addEventListener('click', () => {
+            userAnswers[currentQuestionIndex] = option;
+            console.log(`Answer clicked for question ${currentQuestionIndex + 1}: ${option}`);
             saveExamSession();
         });
 
         const label = document.createElement('label');
         label.htmlFor = `option_${option}`;
         label.textContent = `${option}) ${question.options[option]}`;
+        
+        // Also save when label is clicked
+        label.addEventListener('click', () => {
+            setTimeout(() => {
+                userAnswers[currentQuestionIndex] = option;
+                console.log(`Answer saved via label for question ${currentQuestionIndex + 1}: ${option}`);
+                saveExamSession();
+            }, 50);
+        });
 
         optionDiv.appendChild(input);
         optionDiv.appendChild(label);
@@ -264,6 +283,7 @@ function submitExam() {
     document.getElementById('examContainer').style.display = 'none';
     document.getElementById('resultsContainer').style.display = 'block';
     sessionStorage.removeItem('examSession');
+    localStorage.removeItem('examSession');
 
     if (timerInterval) {
         clearInterval(timerInterval);
@@ -299,6 +319,7 @@ function changeModel() {
     }
     
     sessionStorage.removeItem('examSession');
+    localStorage.removeItem('examSession');
     
     currentQuestionIndex = 0;
     userAnswers = {};
@@ -329,7 +350,7 @@ function retakeExam() {
     changeModel();
 }
 
-// Save Exam Session
+// Save Exam Session - Both sessionStorage and localStorage
 function saveExamSession() {
     const session = {
         currentQuiz: currentQuiz,
@@ -340,7 +361,9 @@ function saveExamSession() {
         timerEnabled: timerEnabled,
         startTime: startTime
     };
-    sessionStorage.setItem('examSession', JSON.stringify(session));
+    const sessionJSON = JSON.stringify(session);
+    sessionStorage.setItem('examSession', sessionJSON);
+    localStorage.setItem('examSession', sessionJSON);
 }
 
 // Download Results
