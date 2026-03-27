@@ -1,6 +1,6 @@
 {
   "total_questions": 407,
-  "questions_per_model": 50,
+  "questions_per_model": 49,
   "total_models": 8,
-  "total_questions_used": 400
+  "total_questions_used": 392
 }

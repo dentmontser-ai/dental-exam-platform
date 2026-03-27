@@ -1,16 +1,6 @@
 {
   "model_1": [
     {
-      "question": "A patient presented with trauma of the central incisor with open apex. Which of the following best describes apexification?",
-      "options": {
-        "A": "Finds the most apical stop of the Gutta-Percha in RCT.",
-        "B": "Induces the formation of a mineral barrier in the apical region of an incompletely developed root.",
-        "C": "Is a new technique in the endodontic field.",
-        "D": "Involves the surgical removal of the apical region of the root and placement of a retrograde filling."
-      },
-      "correct_answer": "B"
-    },
-    {
       "question": "A tailor is presented to your dental office. What is the most common feature to be found in his dentition?",
       "options": {
         "A": "Use of a hard toothbrush.",
@@ -502,16 +492,6 @@
     }
   ],
   "model_2": [
-    {
-      "question": "The primary goal of posterior tooth selection is:",
-      "options": {
-        "A": "To provide good functional requirements.",
-        "B": "To satisfy aesthetic requirements.",
-        "C": "To satisfy psychological requirements.",
-        "D": "None."
-      },
-      "correct_answer": "A"
-    },
     {
       "question": "Indirect composite inlay has the following advantages over the direct composite",
       "options": {
@@ -1005,16 +985,6 @@
   ],
   "model_3": [
     {
-      "question": "Child with mental disorder suffer from orofacial trauma, brought to the hospital by",
-      "options": {
-        "A": "Local anesthesia.",
-        "B": "General anesthesia.",
-        "C": "Gas sedation.",
-        "D": "Intravenous sedation."
-      },
-      "correct_answer": "B"
-    },
-    {
       "question": "Procedure done before applying pit & fissure sealant:",
       "options": {
         "A": "Flush terminal plane.",
@@ -1506,16 +1476,6 @@
     }
   ],
   "model_4": [
-    {
-      "question": "Apicoectomy means :",
-      "options": {
-        "A": "Surgical removal of the apical portion of the root.",
-        "B": "Removal of one or more roots.",
-        "C": "The root and the crown are cut lengthwise.",
-        "D": "None."
-      },
-      "correct_answer": "A"
-    },
     {
       "question": "Patient came to your clinic complaining of pain, upon examination you can’t find",
       "options": {
@@ -2009,16 +1969,6 @@
   ],
   "model_5": [
     {
-      "question": "Reduction in amalgam restoration should be:",
-      "options": {
-        "A": "1-1.5 mm.",
-        "B": "1.5-2 mm.",
-        "C": "2-3 mm.",
-        "D": "3-5 mm."
-      },
-      "correct_answer": "B"
-    },
-    {
       "question": "Instrument used for wax grooving for a die in FPD:",
       "options": {
         "A": "NKT no …",
@@ -2510,16 +2460,6 @@
     }
   ],
   "model_6": [
-    {
-      "question": "A child patient undergone pulpotomy in your clinic in 1st primary molar. Next day",
-      "options": {
-        "A": "Pulpatomy.",
-        "B": "Direct pulp capping.",
-        "C": "Pulpectomy.",
-        "D": "Apexification."
-      },
-      "correct_answer": "B"
-    },
     {
       "question": "Which of the following drugs is completely effective in eliminating angina episode:",
       "options": {
@@ -3013,16 +2953,6 @@
   ],
   "model_7": [
     {
-      "question": "When take x ray in upper premolar to locate lingual root using mesial shift it will",
-      "options": {
-        "A": "Distal.",
-        "B": "Buccal.",
-        "C": "Lingual.",
-        "D": "Mesial."
-      },
-      "correct_answer": "D"
-    },
-    {
       "question": "Pedo Pt use rubber dam for :",
       "options": {
         "A": "Improve visibility and access.",
@@ -3514,16 +3444,6 @@
     }
   ],
   "model_8": [
-    {
-      "question": "Salivary gland role in maintaining tooth and bacteria integrity on the oral cavity",
-      "options": {
-        "A": "Bacterial clearance.",
-        "B": "Remineralization.",
-        "C": "Buffering and direct anti-bacterial role.",
-        "D": "Bacterial clearance and reminerlization."
-      },
-      "correct_answer": "D"
-    },
     {
       "question": "Flasking were done in four groups:",
       "options": {
