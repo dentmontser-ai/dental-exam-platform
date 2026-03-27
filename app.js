@@ -10,7 +10,7 @@ let timerEnabled = false;
 let selectedQuestionCount = 50;
 let selectedModel = null;
 
-// Load questions and models from JSON
+// Load questions and models
 async function loadQuestionsAndModels() {
     try {
         const modelsResponse = await fetch('exam_models.json');
@@ -22,11 +22,10 @@ async function loadQuestionsAndModels() {
         initializeSettings();
     } catch (error) {
         console.error('Error loading data:', error);
-        alert('Failed to load exam data. Please refresh the page.');
     }
 }
 
-// Initialize Settings Screen
+// Initialize Settings
 function initializeSettings() {
     fetch('metadata.json')
         .then(response => response.json())
@@ -39,8 +38,7 @@ function initializeSettings() {
                 modelSelect.appendChild(option);
             }
         })
-        .catch(error => {
-            console.error('Error loading metadata:', error);
+        .catch(() => {
             const modelSelect = document.getElementById('modelSelect');
             for (let i = 1; i <= 8; i++) {
                 const option = document.createElement('option');
@@ -50,6 +48,7 @@ function initializeSettings() {
             }
         });
 
+    // Count buttons
     document.querySelectorAll('.count-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             document.querySelectorAll('.count-btn').forEach(b => b.classList.remove('active'));
@@ -59,6 +58,7 @@ function initializeSettings() {
         });
     });
 
+    // Custom count input
     document.getElementById('customCount').addEventListener('input', function() {
         if (this.value) {
             document.querySelectorAll('.count-btn').forEach(b => b.classList.remove('active'));
@@ -66,6 +66,7 @@ function initializeSettings() {
         }
     });
 
+    // Timer buttons
     document.querySelectorAll('.timer-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             document.querySelectorAll('.timer-btn').forEach(b => b.classList.remove('active'));
@@ -137,33 +138,47 @@ function displayQuestion() {
     optionsContainer.innerHTML = '';
 
     const options = ['A', 'B', 'C', 'D'];
+    const currentAnswer = userAnswers[currentQuestionIndex];
+
     options.forEach(option => {
         const optionDiv = document.createElement('div');
         optionDiv.className = 'option';
+        if (currentAnswer === option) {
+            optionDiv.classList.add('selected');
+        }
         
         const input = document.createElement('input');
         input.type = 'radio';
-        input.name = 'option';
+        input.name = `question_${currentQuestionIndex}`;
         input.value = option;
         input.id = `option_${option}`;
-        input.checked = userAnswers[currentQuestionIndex] === option;
+        input.checked = currentAnswer === option;
         
         const label = document.createElement('label');
         label.htmlFor = `option_${option}`;
+        label.className = 'option-text';
         label.textContent = `${option}) ${question.options[option]}`;
 
         optionDiv.appendChild(input);
         optionDiv.appendChild(label);
         optionsContainer.appendChild(optionDiv);
         
-        // Add click handler directly to the option div
+        // Simple click handler
         optionDiv.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
+            
+            // Update answer
             userAnswers[currentQuestionIndex] = option;
+            
+            // Update UI
+            document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+            optionDiv.classList.add('selected');
             input.checked = true;
+            
+            // Save
             saveExamSession();
-            console.log(`Answer saved: Question ${currentQuestionIndex + 1} = ${option}`);
+            console.log(`Question ${currentQuestionIndex + 1}: Answer = ${option}`);
         });
     });
 
@@ -257,7 +272,7 @@ function submitExam() {
     }
 }
 
-// Timer Functions
+// Timer
 function startTimer() {
     timerInterval = setInterval(() => {
         const elapsed = Math.floor((Date.now() - startTime) / 1000);
@@ -317,7 +332,7 @@ function retakeExam() {
     changeModel();
 }
 
-// Save Exam Session
+// Save Session
 function saveExamSession() {
     const session = {
         currentQuiz: currentQuiz,
@@ -350,5 +365,5 @@ function downloadResults() {
     a.click();
 }
 
-// Initialize on page load
+// Initialize
 document.addEventListener('DOMContentLoaded', loadQuestionsAndModels);
