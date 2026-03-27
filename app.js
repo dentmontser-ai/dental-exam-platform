@@ -10,13 +10,6 @@ let timerEnabled = false;
 let selectedQuestionCount = 50;
 let selectedModel = null;
 
-// Settings
-let examSettings = {
-    model: null,
-    questionCount: 50,
-    timerEnabled: false
-};
-
 // Load questions and models from JSON
 async function loadQuestionsAndModels() {
     try {
@@ -92,12 +85,6 @@ function startExam() {
         return;
     }
 
-    examSettings = {
-        model: selectedModel,
-        questionCount: selectedQuestionCount,
-        timerEnabled: timerEnabled
-    };
-
     document.getElementById('settingsScreen').style.display = 'none';
     document.getElementById('headerSection').style.display = 'block';
     document.getElementById('mainContent').style.display = 'block';
@@ -115,7 +102,6 @@ function initializeExam() {
         currentQuestionIndex = session.currentQuestionIndex;
         userAnswers = session.userAnswers;
         selectedModel = session.selectedModel;
-        examSettings = session.examSettings;
         timerEnabled = session.timerEnabled;
         
         if (timerEnabled && session.startTime) {
@@ -124,13 +110,7 @@ function initializeExam() {
         }
     } else {
         let modelQuestions = examModels[selectedModel] || [];
-
-        if (modelQuestions.length < examSettings.questionCount) {
-            currentQuiz = modelQuestions;
-        } else {
-            currentQuiz = modelQuestions.slice(0, examSettings.questionCount);
-        }
-
+        currentQuiz = modelQuestions.slice(0, selectedQuestionCount);
         userAnswers = {};
         currentQuestionIndex = 0;
     }
@@ -168,36 +148,23 @@ function displayQuestion() {
         input.id = `option_${option}`;
         input.checked = userAnswers[currentQuestionIndex] === option;
         
-        // Save answer immediately when clicked
-        input.addEventListener('change', () => {
-            userAnswers[currentQuestionIndex] = option;
-            console.log(`Answer saved for question ${currentQuestionIndex + 1}: ${option}`);
-            saveExamSession();
-        });
-        
-        // Also save on click to ensure it's captured
-        input.addEventListener('click', () => {
-            userAnswers[currentQuestionIndex] = option;
-            console.log(`Answer clicked for question ${currentQuestionIndex + 1}: ${option}`);
-            saveExamSession();
-        });
-
         const label = document.createElement('label');
         label.htmlFor = `option_${option}`;
         label.textContent = `${option}) ${question.options[option]}`;
-        
-        // Also save when label is clicked
-        label.addEventListener('click', () => {
-            setTimeout(() => {
-                userAnswers[currentQuestionIndex] = option;
-                console.log(`Answer saved via label for question ${currentQuestionIndex + 1}: ${option}`);
-                saveExamSession();
-            }, 50);
-        });
 
         optionDiv.appendChild(input);
         optionDiv.appendChild(label);
         optionsContainer.appendChild(optionDiv);
+        
+        // Add click handler directly to the option div
+        optionDiv.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            userAnswers[currentQuestionIndex] = option;
+            input.checked = true;
+            saveExamSession();
+            console.log(`Answer saved: Question ${currentQuestionIndex + 1} = ${option}`);
+        });
     });
 
     const progress = ((currentQuestionIndex + 1) / currentQuiz.length) * 100;
@@ -350,14 +317,13 @@ function retakeExam() {
     changeModel();
 }
 
-// Save Exam Session - Both sessionStorage and localStorage
+// Save Exam Session
 function saveExamSession() {
     const session = {
         currentQuiz: currentQuiz,
         currentQuestionIndex: currentQuestionIndex,
         userAnswers: userAnswers,
         selectedModel: selectedModel,
-        examSettings: examSettings,
         timerEnabled: timerEnabled,
         startTime: startTime
     };
